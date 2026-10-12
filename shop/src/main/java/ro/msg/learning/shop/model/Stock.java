@@ -1,0 +1,26 @@
+package ro.msg.learning.shop.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@Entity
+@Table(name = "stocks")
+public class Stock {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("productId")
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("locationId")
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    @Column(nullable = false)
+    private Integer quantity;
+}
