@@ -6,15 +6,13 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
 @Entity
 @Table(name = "products")
+@Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product extends BaseEntity {
     @Column(nullable = false)
     private String name;

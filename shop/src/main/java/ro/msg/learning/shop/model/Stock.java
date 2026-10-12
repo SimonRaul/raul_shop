@@ -11,6 +11,9 @@ import lombok.*;
 @Entity
 @Table(name = "stocks")
 public class Stock {
+    @EmbeddedId
+    private StockId id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productId")
     @JoinColumn(name = "product_id")

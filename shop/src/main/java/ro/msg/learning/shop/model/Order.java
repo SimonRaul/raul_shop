@@ -2,15 +2,16 @@ package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity{

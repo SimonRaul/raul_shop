@@ -2,12 +2,13 @@ package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User extends  BaseEntity {

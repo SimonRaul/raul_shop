@@ -12,7 +12,10 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "order_details")
-public class OrderDetail extends BaseEntity{
+public class OrderDetail {
+    @EmbeddedId
+    private OrderDetailId id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("orderId")
     @JoinColumn(name = "order_id")

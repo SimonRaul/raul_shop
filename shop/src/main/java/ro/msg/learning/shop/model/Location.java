@@ -1,21 +1,21 @@
 package ro.msg.learning.shop.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "locations")
 public class Location extends BaseEntity{
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 }
