@@ -6,6 +6,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,10 +33,13 @@ public class Order extends BaseEntity{
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetails;
 }
