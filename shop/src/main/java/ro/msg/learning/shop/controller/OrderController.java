@@ -1,6 +1,7 @@
 package ro.msg.learning.shop.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.msg.learning.shop.dto.request.CreateOrderRequest;
@@ -24,9 +25,9 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
         Order order = mapper.toModel(request);
 
-        Order createdOrder = orderService.createOrder(order);
+        Order createdOrder = orderService.createOrder(order, request.getCustomerId());
 
-        return ResponseEntity.created(URI.create("/api/orders/" + createdOrder.getId())).body(mapper.toDto(createdOrder));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(createdOrder));
     }
 
     @GetMapping("/{id}")

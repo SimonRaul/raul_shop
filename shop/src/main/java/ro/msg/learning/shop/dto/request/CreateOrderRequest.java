@@ -9,6 +9,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +20,5 @@ public class CreateOrderRequest {
     private LocalDateTime createdAt;
     private Address deliveryAddress;
     private List<ProductQuantityDto> products;
+    private UUID customerId;
 }
