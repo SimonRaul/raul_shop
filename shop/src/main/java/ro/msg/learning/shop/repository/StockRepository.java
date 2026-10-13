@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface StockRepository extends JpaRepository<Stock, StockId> {
     Stock findByLocationIdAndProductId(UUID locationId, UUID productId);
+    Stock findFirstByProductIdOrderByQuantityDesc(UUID productId);
 }
