@@ -7,6 +7,8 @@ import ro.msg.learning.shop.exception.NotFoundException;
 import ro.msg.learning.shop.exception.OutOfStockException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.OrderRepository;
+import ro.msg.learning.shop.strategy.LocationStrategy;
+import ro.msg.learning.shop.strategy.StockAllocation;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,46 +27,36 @@ public class OrderService {
 
     private final LocationService locationService;
 
+    private final LocationStrategy locationStrategy;
+
     @Transactional
     public Order createOrder(Order order, UUID userId) {
         if (order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one product.");
         }
 
-        Location location = determineLocation(order);
+        List<StockAllocation> allocations = locationStrategy.determineLocations(order);
 
-        if (location == null) {
+        if (allocations == null || allocations.isEmpty()) {
             throw new OutOfStockException();
         }
 
         order.getOrderDetails().forEach(detail -> {
-            detail.setShippedFrom(location);
-            Product product = productService.getProductById(detail.getProduct().getId());
-            detail.setId(new OrderDetailId(order.getId(), product.getId()));
-            detail.setProduct(product);
-            detail.setUnitPrice(product.getPrice());
+            StockAllocation allocation = allocations.stream()
+                    .filter(a -> a.product().getId().equals(detail.getProduct().getId()))
+                    .findFirst().orElseThrow(OutOfStockException::new);
+            detail.setId(new OrderDetailId(order.getId(), allocation.product().getId()));
+            detail.setShippedFrom(allocation.location());
+            detail.setProduct(allocation.product());
+            detail.setUnitPrice(allocation.product().getPrice());
         });
 
         order.setTotalAmount(calculateTotalAmount(order));
-        updateStock(order);
+        updateStock(allocations);
 
         order.setUser(userService.getUserById(userId));
 
         return orderRepository.save(order);
-    }
-
-    public Location determineLocation(Order order) {
-        for (Location location : locationService.getAllLocations()) {
-            boolean canFulfill = order.getOrderDetails().stream()
-                    .allMatch(detail -> {
-                        Stock stock = stockService.getStockByLocationIdAndProductId(location.getId(), detail.getProduct().getId());
-                        return stock != null && stock.getQuantity() >= detail.getQuantity();
-                    });
-            if (canFulfill) {
-                return location;
-            }
-        }
-        return null;
     }
 
     public BigDecimal calculateTotalAmount(Order order) {
@@ -73,17 +65,19 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void updateStock(Order order) {
-        order.getOrderDetails().forEach(detail -> {
-            Stock stock = stockService.getStockByLocationIdAndProductId(detail.getShippedFrom().getId(),
-                    detail.getProduct().getId());
+    public void updateStock(List<StockAllocation> allocations) {
+        allocations.forEach(allocation -> {
+            Stock stock = stockService.getStockByLocationIdAndProductId(allocation.location().getId(),
+                    allocation.product().getId());
             if (stock != null) {
-                stock.setQuantity(stock.getQuantity() - detail.getQuantity());
+                if (stock.getQuantity() < allocation.quantity()) {
+                    throw new OutOfStockException();
+                }
+                stock.setQuantity(stock.getQuantity() - allocation.quantity());
                 stockService.updateStock(stock.getId(), stock);
-            }
-            else {
-                throw new NotFoundException("Stock for product " + detail.getProduct().getId() +
-                        " at location " + detail.getShippedFrom().getId());
+            } else {
+                throw new NotFoundException("Stock for product " + allocation.product().getId() +
+                        " at location " + allocation.location().getId());
             }
         });
     }
