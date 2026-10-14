@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.msg.learning.shop.exception.NotFoundException;
 import ro.msg.learning.shop.model.Product;
+import ro.msg.learning.shop.model.ProductCategory;
 import ro.msg.learning.shop.repository.ProductRepository;
 
 import java.util.List;
@@ -33,11 +34,14 @@ public class ProductService {
     public Product updateProduct(UUID id, Product product) {
         Product existingProduct = productRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Product with id " + id));
+
+        ProductCategory category = productCategoryService.getCategoryById(product.getCategory().getId());
+
         existingProduct.setName(product.getName());
             existingProduct.setDescription(product.getDescription());
             existingProduct.setPrice(product.getPrice());
             existingProduct.setWeight(product.getWeight());
-            existingProduct.setCategory(product.getCategory());
+            existingProduct.setCategory(category);
             return productRepository.save(existingProduct);
     }
 
