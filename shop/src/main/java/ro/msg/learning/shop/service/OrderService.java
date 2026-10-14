@@ -45,7 +45,7 @@ public class OrderService {
             StockAllocation allocation = allocations.stream()
                     .filter(a -> a.product().getId().equals(detail.getProduct().getId()))
                     .findFirst().orElseThrow(OutOfStockException::new);
-            detail.setId(new OrderDetailId(order.getId(),allocation.product().getId()));
+            detail.setId(new OrderDetailId(order.getId(), allocation.product().getId()));
             detail.setShippedFrom(allocation.location());
             detail.setProduct(allocation.product());
             detail.setUnitPrice(allocation.product().getPrice());
@@ -70,10 +70,12 @@ public class OrderService {
             Stock stock = stockService.getStockByLocationIdAndProductId(allocation.location().getId(),
                     allocation.product().getId());
             if (stock != null) {
+                if (stock.getQuantity() < allocation.quantity()) {
+                    throw new OutOfStockException();
+                }
                 stock.setQuantity(stock.getQuantity() - allocation.quantity());
                 stockService.updateStock(stock.getId(), stock);
-            }
-            else {
+            } else {
                 throw new NotFoundException("Stock for product " + allocation.product().getId() +
                         " at location " + allocation.location().getId());
             }
