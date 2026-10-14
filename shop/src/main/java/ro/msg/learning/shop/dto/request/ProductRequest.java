@@ -1,6 +1,7 @@
 package ro.msg.learning.shop.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,13 +23,13 @@ public class ProductRequest {
     @NotBlank(message = "Product description cannot be blank")
     private String description;
 
-    @NotBlank(message = "Product price cannot be blank")
+    @NotNull(message = "Product price cannot be blank")
     private BigDecimal price;
 
-    @NotBlank(message = "Product weight cannot be blank")
+    @NotNull(message = "Product weight cannot be blank")
     private Double weight;
 
-    @NotBlank(message = "Product category cannot be blank")
+    @NotNull(message = "Product category cannot be blank")
     private UUID categoryId;
 
     private String imageUrl;

@@ -2,18 +2,21 @@ package ro.msg.learning.shop.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import ro.msg.learning.shop.exception.NotFoundException;
+import ro.msg.learning.shop.mapper.ProductMapper;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.ProductCategory;
 import ro.msg.learning.shop.service.ProductService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,16 +26,15 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest
+@WebMvcTest(ProductController.class)
+@Import(ProductMapper.class)
 class ProductControllerTests {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockitoBean
     private ProductService productService;
-
-    @InjectMocks
-    private ProductController productController;
 
     @Test
     void testGetAllProducts() throws Exception {
@@ -54,8 +56,10 @@ class ProductControllerTests {
 
     @Test
     void testGetProductById() throws Exception {
+        UUID productId = UUID.randomUUID();
         Product product = new Product("Product 1", "Description 1", BigDecimal.valueOf(10.0),
                 100.0, new ProductCategory("Category 1", "Description 1"), "image1.jpg");
+        product.setId(productId);
 
         when(productService.getProductById(product.getId())).thenReturn(product);
 
@@ -69,7 +73,31 @@ class ProductControllerTests {
     void testGetProductByIdNotFound() throws Exception {
         when(productService.getProductById(any(UUID.class))).thenThrow(new NotFoundException("Product not found"));
 
-        mockMvc.perform(get("/api/products/{id}", "non-existing-id"))
+        mockMvc.perform(get("/api/products/{id}", UUID.randomUUID()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateProduct() throws Exception {
+        UUID validCategoryId = UUID.randomUUID();
+        UUID generatedProductId = UUID.randomUUID();
+
+        Product product = new Product("Product 1", "Description 1", BigDecimal.valueOf(10.0),
+                100.0, new ProductCategory("Category 1", "Description 1"), "image1.jpg");
+        product.setId(generatedProductId);
+
+        when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+        String jsonPayload = String.format(
+                "{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"weight\":100.0,\"categoryId\":\"%s\",\"imageUrl\":\"image1.jpg\"}",
+                validCategoryId
+        );
+
+        mockMvc.perform(post("/api/products")
+                .contentType("application/json")
+                .content(jsonPayload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Product 1"))
+                .andExpect(jsonPath("$.description").value("Description 1"));
     }
 }
