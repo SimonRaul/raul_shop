@@ -23,7 +23,6 @@ public class OrderService {
 
     private final ProductService productService;
 
-    //Testing purposes
     private final UserService userService;
 
     private final LocationService locationService;
@@ -31,7 +30,7 @@ public class OrderService {
     private final LocationStrategy locationStrategy;
 
     @Transactional
-    public Order createOrder(Order order) {
+    public Order createOrder(Order order, UUID userId) {
         if (order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one product.");
         }
@@ -55,9 +54,7 @@ public class OrderService {
         order.setTotalAmount(calculateTotalAmount(order));
         updateStock(allocations);
 
-        //Testing purposes
-        User dummyUser = userService.getAllUsers().getFirst();
-        order.setUser(dummyUser);
+        order.setUser(userService.getUserById(userId));
 
         return orderRepository.save(order);
     }
