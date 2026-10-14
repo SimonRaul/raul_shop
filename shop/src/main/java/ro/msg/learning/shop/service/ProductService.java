@@ -30,11 +30,11 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Product with id " + id));
         existingProduct.setName(product.getName());
-            existingProduct.setDescription(product.getDescription());
-            existingProduct.setPrice(product.getPrice());
-            existingProduct.setWeight(product.getWeight());
-            existingProduct.setCategory(product.getCategory());
-            return productRepository.save(existingProduct);
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setWeight(product.getWeight());
+        existingProduct.setCategory(product.getCategory());
+        return productRepository.save(existingProduct);
     }
 
     public void deleteProduct(UUID id) {

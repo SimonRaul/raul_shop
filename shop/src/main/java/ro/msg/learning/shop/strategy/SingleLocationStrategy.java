@@ -11,9 +11,10 @@ import ro.msg.learning.shop.repository.ProductRepository;
 import ro.msg.learning.shop.repository.specification.LocationSpecification;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
-public class SingleLocationStrategy implements LocationStrategy{
+public class SingleLocationStrategy implements LocationStrategy {
 
     private final LocationRepository locationRepository;
 
@@ -30,8 +31,9 @@ public class SingleLocationStrategy implements LocationStrategy{
 
         return order.getOrderDetails().stream()
                 .map(detail -> {
-                    Product fullProduct = productRepository.findById(detail.getProduct().getId())
-                            .orElseThrow(() -> new NotFoundException("Product with id " + detail.getProduct().getId()));
+                    UUID productId = detail.getProduct().getId();
+                    Product fullProduct = productRepository.findById(productId)
+                            .orElseThrow(() -> new NotFoundException("Product with id " + productId));
 
                     return new StockAllocation(validLocations.getFirst(), fullProduct, detail.getQuantity());
                 })

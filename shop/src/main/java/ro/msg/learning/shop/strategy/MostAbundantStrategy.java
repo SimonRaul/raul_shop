@@ -9,7 +9,7 @@ import ro.msg.learning.shop.repository.StockRepository;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class MostAbundantStrategy implements LocationStrategy{
+public class MostAbundantStrategy implements LocationStrategy {
 
     private final StockRepository stockRepository;
 
