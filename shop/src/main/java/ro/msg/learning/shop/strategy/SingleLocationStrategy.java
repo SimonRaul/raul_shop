@@ -1,10 +1,13 @@
 package ro.msg.learning.shop.strategy;
 
 import lombok.RequiredArgsConstructor;
+import ro.msg.learning.shop.exception.NotFoundException;
 import ro.msg.learning.shop.exception.OutOfStockException;
 import ro.msg.learning.shop.model.Location;
 import ro.msg.learning.shop.model.Order;
+import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.repository.LocationRepository;
+import ro.msg.learning.shop.repository.ProductRepository;
 import ro.msg.learning.shop.repository.specification.LocationSpecification;
 
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.List;
 public class SingleLocationStrategy implements LocationStrategy{
 
     private final LocationRepository locationRepository;
+
+    private final ProductRepository productRepository;
 
     @Override
     public List<StockAllocation> determineLocations(Order order) {
@@ -23,9 +28,13 @@ public class SingleLocationStrategy implements LocationStrategy{
             throw new OutOfStockException();
         }
 
-            return order.getOrderDetails().stream()
-                .map(detail ->
-                        new StockAllocation(validLocations.getFirst(), detail.getProduct(), detail.getQuantity()))
+        return order.getOrderDetails().stream()
+                .map(detail -> {
+                    Product fullProduct = productRepository.findById(detail.getProduct().getId())
+                            .orElseThrow(() -> new NotFoundException("Product with id " + detail.getProduct().getId()));
+
+                    return new StockAllocation(validLocations.getFirst(), fullProduct, detail.getQuantity());
+                })
                 .toList();
     }
 }
