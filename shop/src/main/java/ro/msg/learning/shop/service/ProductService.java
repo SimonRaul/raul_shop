@@ -14,7 +14,11 @@ import java.util.UUID;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    private final ProductCategoryService productCategoryService;
+
     public Product createProduct(Product product) {
+        product.setCategory(productCategoryService.getCategoryById(product.getCategory().getId()));
+
         return productRepository.save(product);
     }
 
