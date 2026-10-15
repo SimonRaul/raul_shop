@@ -23,9 +23,7 @@ public class StockController {
 
     @GetMapping
     public ResponseEntity<List<StockResponse>> getAllStocks() {
-        List<StockResponse> stocks = stockService.getAllStocks().stream()
-                .map(stockMapper::toResponseDto)
-                .toList();
+        List<StockResponse> stocks = stockMapper.toResponseDtoList(stockService.getAllStocks());
 
         return ResponseEntity.ok().body(stocks);
     }

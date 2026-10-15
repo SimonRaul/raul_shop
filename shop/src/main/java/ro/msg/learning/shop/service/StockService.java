@@ -49,7 +49,7 @@ public class StockService {
 
     @Transactional(readOnly = true)
     public String export(UUID locationId) {
-        if (Boolean.TRUE.equals(!locationService.existsById(locationId))) {
+        if (!locationService.existsById(locationId)) {
             throw new NotFoundException("Location with id: " + locationId);
         }
 
