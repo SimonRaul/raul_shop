@@ -11,6 +11,9 @@ import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tests")
@@ -46,7 +49,7 @@ public class PostmanAPIController {
 
     @PostMapping("/setup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void setup() {
+    public Map<String, UUID> setup() {
         User user = new User("John", "Doe", "johndoe", "password", "john.doe@example.com", UserRole.USER);
         userRepository.save(user);
 
@@ -64,5 +67,10 @@ public class PostmanAPIController {
 
         Stock stock = new Stock(new StockId(product.getId(), location.getId()), product, location, 10);
         stockRepository.save(stock);
+
+        Map<String, UUID> ids = new HashMap<>();
+        ids.put("userId", user.getId());
+        ids.put("productId", product.getId());
+        return ids;
     }
 }
