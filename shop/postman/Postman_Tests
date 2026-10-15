@@ -1,0 +1,208 @@
+{
+  "info": {
+    "_postman_id": "325c635b-e0a7-4bf2-929c-53a0c0b201f5",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54968897",
+    "_collection_link": "https://go.postman.co/collection/54968897-325c635b-e0a7-4bf2-929c-53a0c0b201f5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create Order Success",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.sendRequest({\r\n    url: 'http://localhost:8080/api/tests/setup',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(err);\r\n    } else {\r\n        var jsonData = res.json();\r\n        \r\n        pm.variables.set(\"testUserId\", jsonData.userId);\r\n        pm.variables.set(\"testProductId\", jsonData.productId);\r\n        \r\n        console.log(\"Database seeded successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.sendRequest({\r\n    url: 'http://localhost:8080/api/test-data/teardown',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(\"Teardown failed: \", err);\r\n    } else {\r\n        console.log(\"Database cleared successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"createdAt\": \"2026-10-14T15:00:00\",\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Observatorului\"\r\n    },\r\n    \"products\": [\r\n        {\r\n            \"productId\": \"{{testProductId}}\",\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"customerId\": \"{{testUserId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order Insufficient Stock",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.sendRequest({\r\n    url: 'http://localhost:8080/api/tests/setup',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(err);\r\n    } else {\r\n        var jsonData = res.json();\r\n        \r\n        pm.variables.set(\"testUserId\", jsonData.userId);\r\n        pm.variables.set(\"testProductId\", jsonData.productId);\r\n        \r\n        console.log(\"Database seeded successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.sendRequest({\r\n    url: 'http://localhost:8080/api/test-data/teardown',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(\"Teardown failed: \", err);\r\n    } else {\r\n        console.log(\"Database cleared successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"createdAt\": \"2026-10-14T15:00:00\",\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Observatorului\"\r\n    },\r\n    \"products\": [\r\n        {\r\n            \"productId\": \"{{testProductId}}\",\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"customerId\": \"{{testUserId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order Product not found",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.sendRequest({\r\n    url: 'http://localhost:8080/api/tests/setup',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(err);\r\n    } else {\r\n        var jsonData = res.json();\r\n        \r\n        pm.variables.set(\"testUserId\", jsonData.userId);\r\n        pm.variables.set(\"testProductId\", jsonData.productId);\r\n        \r\n        console.log(\"Database seeded successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.sendRequest({\r\n    url: 'http://localhost:8080/api/test-data/teardown',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(\"Teardown failed: \", err);\r\n    } else {\r\n        console.log(\"Database cleared successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"createdAt\": \"2026-10-14T15:00:00\",\r\n    \"deliveryAddress\": {\r\n        \"country\": \"Romania\",\r\n        \"city\": \"Cluj-Napoca\",\r\n        \"county\": \"Cluj\",\r\n        \"streetAddress\": \"Observatorului\"\r\n    },\r\n    \"products\": [\r\n        {\r\n            \"productId\": \"{{testProductId}}\",\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"customerId\": \"{{testUserId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Export Stocks Success",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.sendRequest({\r\n    url: 'http://localhost:8080/api/tests/setup',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(err);\r\n    } else {\r\n        console.log(\"Database seeded successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.sendRequest({\r\n    url: 'http://localhost:8080/api/test-data/teardown',\r\n    method: 'POST'\r\n}, function (err, res) {\r\n    if (err) {\r\n        console.log(\"Teardown failed: \", err);\r\n    } else {\r\n        console.log(\"Database cleared successfully!\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/stocks",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "stocks"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

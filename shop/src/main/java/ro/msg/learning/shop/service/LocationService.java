@@ -35,6 +35,10 @@ public class LocationService {
         return locationRepository.save(existingLocation);
     }
 
+    public boolean existsById(UUID id) {
+        return locationRepository.existsById(id);
+    }
+
     public void deleteLocation(UUID id) {
         locationRepository.deleteById(id);
     }
