@@ -1,10 +1,12 @@
 package ro.msg.learning.shop.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ro.msg.learning.shop.dto.response.StockResponse;
 import ro.msg.learning.shop.model.Stock;
 
 @RequiredArgsConstructor
+@Component
 public class StockMapper {
 
     private final ProductMapper productMapper;

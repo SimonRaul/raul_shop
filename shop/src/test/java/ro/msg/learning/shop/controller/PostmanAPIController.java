@@ -71,6 +71,7 @@ public class PostmanAPIController {
         Map<String, UUID> ids = new HashMap<>();
         ids.put("userId", user.getId());
         ids.put("productId", product.getId());
+        ids.put("locationId", location.getId());
         return ids;
     }
 }

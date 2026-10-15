@@ -22,7 +22,7 @@ public class StrategyConfig {
 
         return switch (strategyType) {
             case SINGLE -> new SingleLocationStrategy(locationRepository, productRepository);
-            case ABUNDANT -> new MostAbundantStrategy(stockRepository);
+            case ABUNDANT -> new MostAbundantStrategy(stockRepository, productRepository);
         };
     }
 }

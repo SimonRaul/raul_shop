@@ -2,6 +2,7 @@ package ro.msg.learning.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ro.msg.learning.shop.exception.NotFoundException;
 import ro.msg.learning.shop.model.Stock;
 import ro.msg.learning.shop.model.StockId;
@@ -14,6 +15,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StockService {
     private final StockRepository stockRepository;
+
+    private final LocationService locationService;
 
     public Stock createStock(Stock stock) {
         return stockRepository.save(stock);
@@ -42,5 +45,26 @@ public class StockService {
 
     public void deleteAllStocks() {
         stockRepository.deleteAll();
+    }
+
+    @Transactional(readOnly = true)
+    public String export(UUID locationId) {
+        if (Boolean.TRUE.equals(!locationService.existsById(locationId))) {
+            throw new NotFoundException("Location with id: " + locationId);
+        }
+
+        List<Stock> stocks = stockRepository.findByLocationIdOrderByProduct_NameAscProduct_IdAsc(locationId);
+        StringBuilder csv = new StringBuilder("productId,productName,quantity\n");
+        stocks.forEach(stock -> csv.append(stock.getProduct().getId())
+                .append(',')
+                .append(escape(stock.getProduct().getName()))
+                .append(',')
+                .append(stock.getQuantity())
+                .append('\n'));
+        return csv.toString();
+    }
+
+    private String escape(String value) {
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 }
