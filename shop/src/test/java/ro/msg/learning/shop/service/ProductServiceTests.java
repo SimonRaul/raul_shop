@@ -168,7 +168,7 @@ class ProductServiceTests {
         productService.deleteProduct(productId);
 
         verify(productRepository).existsById(productId);
-        verify(stockService).deleteByProductId(productId);
+        verify(stockService).deleteAllByProductId(productId);
         verify(productRepository).deleteById(productId);
     }
 
