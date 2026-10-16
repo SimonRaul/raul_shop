@@ -98,7 +98,25 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
     public void deleteOrder(UUID id) {
-        orderRepository.deleteById(id);
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order with id " + id));
+        if (order.getOrderDetails() != null) {
+            order.getOrderDetails().forEach(detail -> {
+                Stock stock = stockService.getStockByLocationIdAndProductId(
+                        detail.getShippedFrom().getId(),
+                        detail.getProduct().getId()
+                );
+
+                if (stock != null) {
+                    stock.setQuantity(stock.getQuantity() + detail.getQuantity());
+                    stockService.updateStock(stock.getId(), stock);
+                } else {
+                    throw new NotFoundException("Stock for product " + detail.getProduct().getId() +
+                            " at location " + detail.getShippedFrom().getId() + " during stock restoration.");
+                }
+            });
+        }
+        orderRepository.delete(order);
     }
 }
