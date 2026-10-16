@@ -16,7 +16,7 @@ public class RevenueController {
 
     @GetMapping("/export")
     @PreAuthorize("hasAuthority('ADMIN')")
-    private String exportRevenues(@RequestBody RevenueRequest request) {
+    public String exportRevenues(@RequestBody RevenueRequest request) {
 
 
         return revenueService.exportCsv();
