@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ro.msg.learning.shop.service.RevenueService;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class RevenueReportTask {
 
     @Scheduled(cron = "${tasks.end-of-day.cron}", zone = "${tasks.end-of-day.timezone}")
     public void reportRevenueForPreviousDay() {
-        revenueService.createRevenuesForDate(LocalDate.now().minusDays(1));
+        revenueService.createRevenuesForDate(LocalDate.now(ZoneId.systemDefault()).minusDays(1));
+
     }
 }
