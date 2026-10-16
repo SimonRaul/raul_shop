@@ -50,7 +50,7 @@ public class PostmanAPIController {
     @PostMapping("/setup")
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, UUID> setup() {
-        User user = new User("John", "Doe", "johndoe", "password", "john.doe@example.com", UserRole.USER);
+        User user = new User("John", "Doe", "johndoe", "password", "john.doe@example.com", UserRole.CUSTOMER);
         userRepository.save(user);
 
         ProductCategory category = new ProductCategory("Electronics", "Electronic devices and gadgets");

@@ -2,6 +2,7 @@ package ro.msg.learning.shop.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ro.msg.learning.shop.exception.NotFoundException;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.ProductCategory;
@@ -16,6 +17,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     private final ProductCategoryService productCategoryService;
+
+    private final StockService stockService;
 
     public Product createProduct(Product product) {
         product.setCategory(productCategoryService.getCategoryById(product.getCategory().getId()));
@@ -45,10 +48,14 @@ public class ProductService {
             return productRepository.save(existingProduct);
     }
 
+    @Transactional
     public void deleteProduct(UUID id) {
-        if(!productRepository.existsById(id)) {
+        if (!productRepository.existsById(id)) {
             throw new NotFoundException("Product with id " + id);
         }
+
+        stockService.deleteByProductId(id);
+
         productRepository.deleteById(id);
     }
 }

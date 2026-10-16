@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import ro.msg.learning.shop.config.TestConfig;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.*;
+import ro.msg.learning.shop.security.JwtUtil;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.notNullValue;
@@ -47,6 +51,9 @@ class OrderControllerITTests {
     @Autowired
     private ProductCategoryRepository categoryRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     private UUID existingProductId;
     private UUID existingUserId;
 
@@ -61,7 +68,7 @@ class OrderControllerITTests {
         categoryRepository.deleteAll();
         addressRepository.deleteAll();
 
-        User user = new User("John", "Doe", "johndoe", "password", "john.doe@example.com", UserRole.USER);
+        User user = new User("John", "Doe", "johndoe", "password", "john.doe@example.com", UserRole.CUSTOMER);
         user = userRepository.save(user);
         this.existingUserId = user.getId();
 
@@ -105,6 +112,7 @@ class OrderControllerITTests {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + createAccessToken())
                 .body(requestBody)
                 .when()
                 .post("/api/orders")
@@ -136,6 +144,7 @@ class OrderControllerITTests {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + createAccessToken())
                 .body(requestBody)
                 .when()
                 .post("/api/orders")
@@ -143,4 +152,11 @@ class OrderControllerITTests {
                 .statusCode(422);
     }
 
+    private String createAccessToken() {
+        return jwtUtil.createToken(new UsernamePasswordAuthenticationToken(
+                "johndoe",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"))
+        ));
+    }
 }

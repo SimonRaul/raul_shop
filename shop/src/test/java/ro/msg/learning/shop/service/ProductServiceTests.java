@@ -29,6 +29,9 @@ class ProductServiceTests {
     @Mock
     private ProductCategoryService productCategoryService;
 
+    @Mock
+    private StockService stockService;
+
     @InjectMocks
     private ProductService productService;
 
@@ -165,6 +168,7 @@ class ProductServiceTests {
         productService.deleteProduct(productId);
 
         verify(productRepository).existsById(productId);
+        verify(stockService).deleteByProductId(productId);
         verify(productRepository).deleteById(productId);
     }
 
