@@ -100,11 +100,7 @@ public class OrderService {
 
     @Transactional
     public void deleteOrder(UUID id) {
-        Order order = orderRepository.findById(id).orElse(null);
-        if (order == null) {
-            throw new NotFoundException("Order with id " + id);
-        }
-
+        Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order with id " + id));
         if (order.getOrderDetails() != null) {
             order.getOrderDetails().forEach(detail -> {
                 Stock stock = stockService.getStockByLocationIdAndProductId(
