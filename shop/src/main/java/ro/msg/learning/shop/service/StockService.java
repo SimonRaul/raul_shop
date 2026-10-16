@@ -69,7 +69,7 @@ public class StockService {
     }
 
     @Transactional
-    public void deleteByProductId(UUID productId) {
-        stockRepository.deleteByProductId(productId);
+    public void deleteAllByProductId(UUID productId) {
+        stockRepository.deleteAllByProductId(productId);
     }
 }

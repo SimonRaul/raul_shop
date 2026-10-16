@@ -54,7 +54,7 @@ public class ProductService {
             throw new NotFoundException("Product with id " + id);
         }
 
-        stockService.deleteByProductId(id);
+        stockService.deleteAllByProductId(id);
 
         productRepository.deleteById(id);
     }
