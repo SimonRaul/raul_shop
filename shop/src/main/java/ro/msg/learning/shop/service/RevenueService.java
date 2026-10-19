@@ -1,15 +1,12 @@
 package ro.msg.learning.shop.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.msg.learning.shop.exception.EntityAlreadyExistsException;
 import ro.msg.learning.shop.model.Location;
 import ro.msg.learning.shop.model.Revenue;
 import ro.msg.learning.shop.repository.RevenueRepository;
-
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +39,7 @@ public class RevenueService {
 
             Revenue revenue = Revenue.builder()
                     .amount(amount)
-                    .date(date.atStartOfDay())
+                    .date(date)
                     .location(location)
                     .build();
 

@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "revenues")
@@ -25,7 +25,7 @@ public class Revenue extends BaseEntity{
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
