@@ -3,14 +3,13 @@ package ro.msg.learning.shop.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.msg.learning.shop.dto.request.CreateOrderRequest;
 import ro.msg.learning.shop.dto.response.OrderResponse;
 import ro.msg.learning.shop.mapper.OrderMapper;
 import ro.msg.learning.shop.model.Order;
 import ro.msg.learning.shop.service.OrderService;
-
-import java.net.URI;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -35,5 +34,12 @@ public class OrderController {
         Order order = orderService.getOrderById(id);
 
         return ResponseEntity.ok(mapper.toDto(order));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

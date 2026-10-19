@@ -40,6 +40,6 @@ public class Order extends BaseEntity{
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 }

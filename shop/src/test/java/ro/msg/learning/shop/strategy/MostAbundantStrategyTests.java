@@ -11,6 +11,7 @@ import ro.msg.learning.shop.model.Order;
 import ro.msg.learning.shop.model.OrderDetail;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.Stock;
+import ro.msg.learning.shop.repository.ProductRepository;
 import ro.msg.learning.shop.repository.StockRepository;
 
 import java.util.List;
@@ -27,6 +28,9 @@ class MostAbundantStrategyTests {
 
     @Mock
     private StockRepository stockRepository;
+
+    @Mock
+    private ProductRepository productRepository;
 
     @InjectMocks
     private MostAbundantStrategy mostAbundantStrategy;
@@ -69,6 +73,8 @@ class MostAbundantStrategyTests {
                 .build();
         when(stockRepository.findFirstByProductIdOrderByQuantityDesc(firstProductId)).thenReturn(firstStock);
         when(stockRepository.findFirstByProductIdOrderByQuantityDesc(secondProductId)).thenReturn(secondStock);
+        when(productRepository.existsById(firstProductId)).thenReturn(true);
+        when(productRepository.existsById(secondProductId)).thenReturn(true);
 
         List<StockAllocation> allocations = mostAbundantStrategy.determineLocations(order);
 
@@ -77,6 +83,8 @@ class MostAbundantStrategyTests {
                 new StockAllocation(secondLocation, secondProduct, 3)), allocations);
         verify(stockRepository).findFirstByProductIdOrderByQuantityDesc(firstProductId);
         verify(stockRepository).findFirstByProductIdOrderByQuantityDesc(secondProductId);
+        verify(productRepository).existsById(firstProductId);
+        verify(productRepository).existsById(secondProductId);
     }
 
     @Test
@@ -87,6 +95,7 @@ class MostAbundantStrategyTests {
 
         assertEquals(List.of(), allocations);
         verifyNoInteractions(stockRepository);
+        verifyNoInteractions(productRepository);
     }
 
     @Test
@@ -96,12 +105,14 @@ class MostAbundantStrategyTests {
                 .orderDetails(List.of(orderDetail(productWithId(productId), 1)))
                 .build();
         when(stockRepository.findFirstByProductIdOrderByQuantityDesc(productId)).thenReturn(null);
+        when(productRepository.existsById(productId)).thenReturn(true);
 
         OutOfStockException exception = assertThrows(
                 OutOfStockException.class,
                 () -> mostAbundantStrategy.determineLocations(order));
 
         assertEquals("No location can fulfill all products in the required quantities.", exception.getMessage());
+        verify(productRepository).existsById(productId);
         verify(stockRepository).findFirstByProductIdOrderByQuantityDesc(productId);
     }
 
@@ -114,12 +125,14 @@ class MostAbundantStrategyTests {
                 .build();
         when(stockRepository.findFirstByProductIdOrderByQuantityDesc(productId))
                 .thenReturn(stock(product, new Location(), 4));
+        when(productRepository.existsById(productId)).thenReturn(true);
 
         OutOfStockException exception = assertThrows(
                 OutOfStockException.class,
                 () -> mostAbundantStrategy.determineLocations(order));
 
         assertEquals("No location can fulfill all products in the required quantities.", exception.getMessage());
+        verify(productRepository).existsById(productId);
         verify(stockRepository).findFirstByProductIdOrderByQuantityDesc(productId);
     }
 }

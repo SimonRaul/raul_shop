@@ -67,4 +67,9 @@ public class StockService {
     private String escape(String value) {
         return "\"" + value.replace("\"", "\"\"") + "\"";
     }
+
+    @Transactional
+    public void deleteAllByProductId(UUID productId) {
+        stockRepository.deleteAllByProductId(productId);
+    }
 }
